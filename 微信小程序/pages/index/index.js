@@ -1,24 +1,15 @@
 //index.js
 //获取应用实例
-const app = getApp()
-var name=[]
-var chexi=[]
-
-for(var i=0;i<10;i++){
-  name.push(i)
-}
-var appid ='c2bdc29f7a314973b29e60d855358b34'
-var url = 'http://apis.haoservice.com/lifeservice/car/GetSeries?key='+appid
-console.log('url',url)
-
+const appid ='c2bdc29f7a314973b29e60d855358b34'
+const url = 'http://apis.haoservice.com/lifeservice/car/GetSeries?key='+appid
+//console.log('url',url)
+let mark=null
 Page({
-  
   data: {
     flang:true,
-    name:name,
     value:[0,0,0] ,   
-
   },
+  //选择触发hidden show
   bindpiker:function(){
     if(this.data.flang){
         this.data.flang=false
@@ -30,48 +21,36 @@ Page({
       flang:this.data.flang  
     })
   },
+  //滑动改变时触发
   bindChange:function(e){
     const val = e.detail.value
+    if (mark != e.detail.value[0]) {
+      mark=val[0]
+      val[1]=0
+      val[2]=0
+      this.setData({
+        value:[val[0],0,0]
+      })
+    }
     console.log(val)
     //当前拿到所有数据对象{I: 276, N: "ALPINA", L: "A", List: Array(1)}
     var data=this.data.result[val[0]]
     //拿到车系
     var chexi=data.List
     // 拿到车型号
-   try{
     var typecar=chexi[val[1]].List//系类中对应的所有车辆
     var chexione= chexi[val[1]]
-    console.log('chexitrue')
-   }catch(e){
-     var typecar = chexi[0].List//如果报错那么就改了品牌默认系列中第一个系列所有车辆
-     var chexione = chexi[0]
-     console.log('chexifalse')
-   }
-   try{
-     var carname = typecar[val[2]]//这里得到的是undefined
-     if(carname.N){
-     }
-   }catch (e) {
-     var carname = typecar[0]
-   }
+     var carname = typecar[val[2]]//这里得到的是undefined如果数组长度不够时
     this.setData({
       typecar:typecar,
       chexi:chexi,
       carname: carname.N,
-    
     })
-    try {
-      console.log('value', data.N,chexione.N,carname.N) 
-      //console.log('value', data.I, chexidata.I, typecardata.I) 
-     
-    } catch (e) {
-      // Do something when catch error
-    }
-    
+    console.log('value', data.N, chexione.N, carname.N) 
   },
   
   onLoad: function () {
-    console.log(this.data)
+    //console.log(this.data)
     wx.request({
       url: url,
       method: 'GET',
@@ -80,16 +59,15 @@ Page({
         'content-type': 'application/json' // 默认值
       },
       success: function (res) {
-        console.log('数据是', res.data)
-        console.log('数据是', res.data.reason)
-        
+        console.log('res',res)
+        //console.log('数据是', res.data)
+        //console.log('数据是', res.data.reason)
         that.setData({
           status: res.data.reason,
           result:res.data.result,
-          value:that.data.value
         })
       }
     })
-    var that = this
+    var that=this
   }
 })

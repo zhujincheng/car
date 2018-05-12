@@ -18,11 +18,7 @@
     </picker-view-column>
 
   </picker-view>
-
-
 </view> 
- <view>otherdata</view> 
-
 </view>
 
 
